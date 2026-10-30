@@ -117,12 +117,17 @@
       font-weight: 500;
       color: #ffffff;
       text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
-      animation: fadeIn 0.2s ease;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-4px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* אנימציית רטט עדינה לכתובית בלבד */
+    @keyframes textShake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    .text-shake {
+      animation: textShake 0.35s ease-in-out;
     }
 
     .pin-dots {
@@ -160,7 +165,6 @@
       margin: 0 auto;
     }
 
-    /* כפתורי מקשים ללא מסגרת (border: none) */
     .key-btn {
       width: 62px;
       height: 62px;
@@ -343,16 +347,6 @@
       opacity: 1;
       transform: translateY(0);
     }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-9px); }
-      40%, 80% { transform: translateX(9px); }
-    }
-
-    .shake {
-      animation: shake 0.35s ease-in-out;
-    }
   </style>
 </head>
 <body>
@@ -511,6 +505,7 @@
           clearTimeout(errorTimeout);
           errorTimeout = null;
           errorMsg.style.display = "none";
+          errorMsg.classList.remove("text-shake");
         }
         titleGroup.classList.add("hidden");
       } else {
@@ -569,8 +564,6 @@
       } else {
         hasHadError = true;
 
-        const container = document.getElementById("phoneContainer");
-        container.classList.add("shake");
         playTone(250);
         if (navigator.vibrate) navigator.vibrate([40, 60, 40]);
 
@@ -579,11 +572,16 @@
 
         titleGroup.style.display = "none";
         errorMsg.style.display = "block";
+        
+        // הרטטת הכתובית בלבד
+        errorMsg.classList.remove("text-shake");
+        void errorMsg.offsetWidth; // trigger reflow
+        errorMsg.classList.add("text-shake");
 
         if (errorTimeout) clearTimeout(errorTimeout);
         errorTimeout = setTimeout(() => {
-          container.classList.remove("shake");
           errorMsg.style.display = "none";
+          errorMsg.classList.remove("text-shake");
           errorTimeout = null;
         }, 2500);
       }
